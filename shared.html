@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎄 Shared New Year Portfolio | Cloud Sync</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        /* ==================== ОСНОВНЫЕ СТИЛИ ==================== */
+        :root {
+            --primary-color: #d32f2f;
+            --secondary-color: #388e3c;
+            --bg-color: #0c1b33;
+            --text-color: #fff;
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --gold: #ffd700;
+            --red: #ff3d3d;
+            --green: #2ecc71;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* ==================== ЗАГОЛОВОК ==================== */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #1a237e 0%, #311b92 100%);
+            border-radius: 20px;
+            border: 3px solid var(--gold);
+        }
+        
+        .main-title {
+            font-size: 3rem;
+            color: var(--gold);
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+        
+        /* ==================== КНОПКИ (АНГЛИЙСКИЕ) ==================== */
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(45deg, var(--red), var(--gold));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            text-decoration: none;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-green {
+            background: linear-gradient(45deg, var(--green), #27ae60);
+        }
+        
+        .btn-blue {
+            background: linear-gradient(45deg, #2196F3, #21CBF3);
+        }
+        
+        /* ==================== КАРТОЧКИ ==================== */
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+        
+        .card h2 {
+            color: var(--gold);
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 10px;
+        }
+        
+        /* ==================== ФОРМЫ ==================== */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--gold);
+            font-weight: bold;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--gold);
+        }
+        
+        /* ==================== УВЕДОМЛЕНИЯ ==================== */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--green);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            z-index: 1000;
+            animation: slideIn 0.5s ease;
+            display: none;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        /* ==================== СНЕГ ==================== */
+        .snowflakes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .snowflake {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: fall linear infinite;
+        }
+        
+        @keyframes fall {
+            to { transform: translateY(100vh); }
+        }
+        
+        /* ==================== АДАПТИВНОСТЬ ==================== */
+        @media (max-width: 768px) {
+            .main-title { font-size: 2rem; }
+            .btn { display: block; width: 100%; margin: 10px 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Снег -->
+    <div class="snowflakes" id="snowflakes"></div>
+    
+    <!-- Уведомления -->
+    <div class="notification" id="notification"></div>
+    
+    <!-- Основной контейнер -->
+    <div class="container">
+        <!-- Шапка -->
+        <header class="header">
+            <h1 class="main-title">🎄 Shared New Year Portfolio</h1>
+            <p class="subtitle">Edit together with friends in real-time! All changes sync automatically.</p>
+            
+            <!-- Кнопки управления -->
+            <div class="buttons">
+                <button class="btn" onclick="login()">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+                <button class="btn btn-green" onclick="saveData()">
+                    <i class="fas fa-save"></i> Save to Cloud
+                </button>
+                <button class="btn btn-blue" onclick="shareLink()">
+                    <i class="fas fa-share-alt"></i> Share Link
+                </button>
+                <button class="btn" onclick="loadData()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+        </header>
+        
+        <!-- Редактор портфолио -->
+        <main>
+            <!-- Личная информация -->
+            <section class="card">
+                <h2><i class="fas fa-user"></i> Personal Information</h2>
+                <div class="form-group">
+                    <label class="form-label">Name:</label>
+                    <input type="text" id="name" class="form-input" placeholder="Enter your name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Age:</label>
+                    <input type="number" id="age" class="form-input" placeholder="Your age">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">City:</label>
+                    <input type="text" id="city" class="form-input" placeholder="Your city">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description:</label>
+                    <textarea id="description" class="form-input" rows="3" placeholder="About yourself..."></textarea>
+                </div>
+            </section>
+            
+            <!-- Навыки -->
+            <section class="card">
+                <h2><i class="fas fa-star"></i> Skills</h2>
+                <div id="skills-container">
+                    <!-- Навыки будут добавляться здесь -->
+                </div>
+                <button class="btn" onclick="addSkill()">
+                    <i class="fas fa-plus"></i> Add Skill
+                </button>
+            </section>
+            
+            <!-- Статус Firebase -->
+            <section class="card">
+                <h2><i class="fas fa-cloud"></i> Cloud Status</h2>
+                <div id="firebase-status">
+                    <p><i class="fas fa-circle" id="status-icon" style="color: #ff4757;"></i> 
+                       <span id="status-text">Connecting to Firebase...</span>
+                    </p>
+                    <p id="portfolio-id">Portfolio ID: <strong>loading...</strong></p>
+                    <p id="last-updated">Last updated: <strong>never</strong></p>
+                </div>
+            </section>
+        </main>
+        
+        <!-- Подвал -->
+        <footer style="text-align: center; margin-top: 50px; padding: 20px; color: rgba(255,255,255,0.7);">
+            <p>✨ Shared Portfolio with Firebase Sync ✨</p>
+            <p>All changes save automatically to the cloud</p>
+            <p>Share the link with friends to edit together!</p>
+        </footer>
+    </div>
+    
+    <!-- Основной скрипт -->
+    <script>
+        // ==================== КОНФИГУРАЦИЯ FIREBASE ====================
+        // 🔴 ЗАМЕНИТЕ ЭТИ ДАННЫЕ НА СВОИ ИЗ FIREBASE CONSOLE!
+        const firebaseConfig = {
+            apiKey: "AIzaSyB...YOUR_API_KEY_HERE",
+            authDomain: "newyear-portfolio-shared.firebaseapp.com",
+            projectId: "newyear-portfolio-shared",
+            storageBucket: "newyear-portfolio-shared.appspot.com",
+            messagingSenderId: "123456789012",
+            appId: "1:123456789012:web:abcdef1234567890"
+        };
+        
+        // ==================== ПЕРЕМЕННЫЕ ====================
+        let app, auth, db;
+        let currentUser = null;
+        let currentPortfolioId = "default_portfolio";
+        let isInitialized = false;
+        
+        // ==================== ИНИЦИАЛИЗАЦИЯ FIREBASE ====================
+        function initFirebase() {
+            try {
+                // Инициализируем Firebase
+                app = firebase.initializeApp(firebaseConfig);
+                auth = firebase.auth();
+                db = firebase.firestore();
+                
+                console.log("✅ Firebase initialized");
+                updateStatus("Connected to Firebase", true);
+                
+                // Настраиваем анонимный вход
+                setupAuth();
+                
+                // Настраиваем снег
+                createSnowflakes();
+                
+                isInitialized = true;
+            } catch (error) {
+                console.error("❌ Firebase init error:", error);
+                updateStatus("Firebase error: " + error.message, false);
+            }
+        }
+        
+        // ==================== АУТЕНТИФИКАЦИЯ ====================
+        async function setupAuth() {
+            try {
+                // Входим анонимно (не требует пароля)
+                const result = await auth.signInAnonymously();
+                currentUser = result.user;
+                
+                console.log("✅ Anonymous user:", currentUser.uid);
+                updateStatus("Logged in as Guest", true);
+                
+                // Загружаем данные портфолио
+                loadPortfolioData();
+                
+                // Настраиваем слушатель в реальном времени
+                setupRealtimeListener();
+            } catch (error) {
+                console.error("❌ Auth error:", error);
+                updateStatus("Login failed", false);
+            }
+        }
+        
+        // ==================== РАБОТА С ДАННЫМИ ====================
+        async function loadPortfolioData() {
+            if (!isInitialized) return;
+            
+            try {
+                const docRef = db.collection("shared_portfolios").doc(currentPortfolioId);
+                const doc = await docRef.get();
+                
+                if (doc.exists) {
+                    const data = doc.data();
+                    console.log("✅ Portfolio loaded:", data);
+                    
+                    // Заполняем форму данными
+                    if (data.personalInfo) {
+                        document.getElementById('name').value = data.personalInfo.name || '';
+                        document.getElementById('age').value = data.personalInfo.age || '';
+                        document.getElementById('city').value = data.personalInfo.city || '';
+                        document.getElementById('description').value = data.personalInfo.description || '';
+                    }
+                    
+                    // Загружаем навыки
+                    if (data.skills) {
+                        loadSkills(data.skills);
+                    }
+                    
+                    updateStatus("Portfolio loaded", true);
+                    updateLastUpdated(data.lastUpdated);
+                } else {
+                    console.log("📝 Creating new portfolio...");
+                    updateStatus("New portfolio created", true);
+                }
+            } catch (error) {
+                console.error("❌ Load error:", error);
+                updateStatus("Load failed", false);
+            }
+        }
+        
+        async function saveData() {
+            if (!isInitialized || !currentUser) {
+                showNotification("Please wait for connection...");
+                return;
+            }
+            
+            try {
+                // Собираем данные
+                const portfolioData = {
+                    personalInfo: {
+                        name: document.getElementById('name').value,
+                        age: document.getElementById('age').value,
+                        city: document.getElementById('city').value,
+                        description: document.getElementById('description').value
+                    },
+                    skills: getSkillsData(),
+                    lastUpdated: new Date().toISOString(),
+                    updatedBy: currentUser.uid,
+                    updatedByName: "Guest User"
+                };
+                
+                // Сохраняем в Firebase
+                await db.collection("shared_portfolios")
+                    .doc(currentPortfolioId)
+                    .set(portfolioData, { merge: true });
+                
+                console.log("✅ Portfolio saved");
+                showNotification("✅ Saved to cloud!");
+                updateStatus("Saved successfully", true);
+                updateLastUpdated(portfolioData.lastUpdated);
+            } catch (error) {
+                console.error("❌ Save error:", error);
+                showNotification("❌ Save failed: " + error.message);
+                updateStatus("Save failed", false);
+            }
+        }
+        
+        // ==================== СИНХРОНИЗАЦИЯ В РЕАЛЬНОМ ВРЕМЕНИ ====================
+        function setupRealtimeListener() {
+            const docRef = db.collection("shared_portfolios").doc(currentPortfolioId);
+            
+            docRef.onSnapshot((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    console.log("🔄 Real-time update received");
+                    
+                    // Обновляем только если данные действительно изменились
+                    // (чтобы не перезаписывать то, что пользователь сейчас пишет)
+                    if (shouldUpdateForm(data)) {
+                        updateFormFromData(data);
+                        showNotification("🔁 Updated from another user!");
+                    }
+                    
+                    updateLastUpdated(data.lastUpdated);
+                }
+            }, (error) => {
+                console.error("❌ Realtime error:", error);
+            });
+        }
+        
+        // ==================== ИНТЕРФЕЙС ====================
+        function updateStatus(message, isSuccess) {
+            const icon = document.getElementById('status-icon');
+            const text = document.getElementById('status-text');
+            
+            text.textContent = message;
+            icon.style.color = isSuccess ? "#2ecc71" : "#ff4757";
+        }
+        
+        function updateLastUpdated(timestamp) {
+            const element = document.getElementById('last-updated');
+            if (timestamp) {
+                const date = new Date(timestamp);
+                element.innerHTML = `Last updated: <strong>${date.toLocaleTimeString()}</strong>`;
+            } else {
+                element.innerHTML = 'Last updated: <strong>never</strong>';
+            }
+        }
+        
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.display = 'block';
+            
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 3000);
+        }
+        
+        // ==================== НАВЫКИ ====================
+        function addSkill() {
+            const container = document.getElementById('skills-container');
+            const skillId = Date.now();
+            
+            const skillHtml = `
+                <div class="form-group skill-item" data-id="${skillId}">
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <input type="text" class="form-input skill-name" placeholder="Skill name" style="flex: 2;">
+                        <input type="range" class="skill-level" min="0" max="100" value="50" style="flex: 3;">
+                        <span class="skill-percent">50%</span>
+                        <button class="btn" onclick="removeSkill(${skillId})" style="padding: 5px 10px; background: #dc3545;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', skillHtml);
+            
+            // Добавляем обработчик для слайдера
+            const newSkill = container.querySelector(`[data-id="${skillId}"]`);
+            const slider = newSkill.querySelector('.skill-level');
+            const percent = newSkill.querySelector('.skill-percent');
+            
+            slider.addEventListener('input', function() {
+                percent.textContent = `${this.value}%`;
+            });
+        }
+        
+        function removeSkill(id) {
+            const element = document.querySelector(`[data-id="${id}"]`);
+            if (element) element.remove();
+        }
+        
+        function loadSkills(skills) {
+            const container = document.getElementById('skills-container');
+            container.innerHTML = '';
+            
+            skills.forEach(skill => {
+                addSkill();
+                // Устанавливаем значения для последнего добавленного навыка
+                const lastSkill = container.lastElementChild;
+                lastSkill.querySelector('.skill-name').value = skill.name || '';
+                lastSkill.querySelector('.skill-level').value = skill.level || 50;
+                lastSkill.querySelector('.skill-percent').textContent = `${skill.level || 50}%`;
+            });
+        }
+        
+        function getSkillsData() {
+            const skills = [];
+            document.querySelectorAll('.skill-item').forEach(item => {
+                const name = item.querySelector('.skill-name').value;
+                const level = item.querySelector('.skill-level').value;
+                
+                if (name.trim()) {
+                    skills.push({ name, level: parseInt(level) });
+                }
+            });
+            return skills;
+        }
+        
+        // ==================== СОВМЕСТНЫЙ ДОСТУП ====================
+        function shareLink() {
+            const link = `${window.location.origin}${window.location.pathname}?portfolio=${currentPortfolioId}`;
+            
+            // Копируем в буфер обмена
+            navigator.clipboard.writeText(link).then(() => {
+                showNotification("📋 Link copied! Share with friends.");
+            }).catch(err => {
+                // Если не поддерживается, показываем ссылку
+                prompt("Share this link:", link);
+            });
+        }
+        
+        function login() {
+            showNotification("You are logged in as Guest. Changes save automatically.");
+        }
+        
+        // ==================== СНЕГ ====================
+        function createSnowflakes() {
+            const container = document.getElementById('snowflakes');
+            container.innerHTML = '';
+            
+            for (let i = 0; i < 50; i++) {
+                const flake = document.createElement('div');
+                flake.className = 'snowflake';
+                
+                flake.style.width = `${Math.random() * 10 + 5}px`;
+                flake.style.height = flake.style.width;
+                flake.style.left = `${Math.random() * 100}vw`;
+                flake.style.opacity = Math.random() * 0.7 + 0.3;
+                flake.style.animationDuration = `${Math.random() * 10 + 10}s`;
+                flake.style.animationDelay = `${Math.random() * 5}s`;
+                
+                container.appendChild(flake);
+            }
+        }
+        
+        // ==================== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ====================
+        function shouldUpdateForm(remoteData) {
+            // Простая проверка: обновляем если прошло больше 2 секунд с последнего сохранения
+            const localTime = new Date().getTime();
+            const remoteTime = new Date(remoteData.lastUpdated).getTime();
+            
+            return (localTime - remoteTime) > 2000; // 2 секунды
+        }
+        
+        function updateFormFromData(data) {
+            // Безопасное обновление полей
+            if (data.personalInfo) {
+                const fields = ['name', 'age', 'city', 'description'];
+                fields.forEach(field => {
+                    const element = document.getElementById(field);
+                    if (element && data.personalInfo[field] && 
+                        element !== document.activeElement) {
+                        element.value = data.personalInfo[field] || '';
+                    }
+                });
+            }
+            
+            if (data.skills) {
+                loadSkills(data.skills);
+            }
+        }
+        
+        // ==================== ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Получаем ID портфолио из URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const portfolioParam = urlParams.get('portfolio');
+            if (portfolioParam) {
+                currentPortfolioId = portfolioParam;
+            }
+            
+            document.getElementById('portfolio-id').innerHTML = 
+                `Portfolio ID: <strong>${currentPortfolioId}</strong>`;
+            
+            // Автосохранение каждые 30 секунд
+            setInterval(() => {
+                if (document.querySelector('.form-input:focus')) {
+                    saveData();
+                }
+            }, 30000);
+            
+            // Инициализируем Firebase
+            initFirebase();
+            
+            // Автоматическая загрузка
+            setTimeout(loadData, 1000);
+        });
+        
+        // Экспортируем функции для кнопок
+        window.login = login;
+        window.saveData = saveData;
+        window.shareLink = shareLink;
+        window.loadData = loadPortfolioData;
+        window.addSkill = addSkill;
+        window.removeSkill = removeSkill;
+    </script>
+</body>
+</html>
