@@ -48,6 +48,37 @@
             overflow-x: hidden;
             min-height: 100vh;
             position: relative;
+            transition: background-color 0.5s ease;
+        }
+
+        /* Кнопка сохранения вверху */
+        .save-top-btn {
+            position: absolute;
+            top: 25px;
+            right: 80px;
+            background: linear-gradient(45deg, var(--green), #27ae60);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .save-top-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+        }
+
+        .save-top-btn i {
+            font-size: 1.1rem;
         }
 
         /* Снег и новогодний фон */
@@ -390,6 +421,18 @@
 
         .account-menu.active {
             display: flex;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .account-item {
@@ -439,6 +482,10 @@
 
         .settings-panel.active {
             right: 0;
+        }
+
+        .settings-panel.closing {
+            right: -450px;
         }
 
         .settings-panel::-webkit-scrollbar {
@@ -575,6 +622,7 @@
             cursor: pointer;
             text-align: center;
             transition: all 0.3s ease;
+            position: relative;
         }
 
         .upload-btn:hover {
@@ -691,6 +739,7 @@
             opacity: 0.3;
             z-index: -1;
             filter: blur(3px);
+            transition: opacity 0.5s ease;
         }
 
         .profile-container {
@@ -736,48 +785,78 @@
             color: white;
         }
 
-        /* Второстепенное фото с текстом */
+        /* Второстепенное фото с текстом - НОВЫЙ СТИЛЬ (фото сверху, текст снизу) */
         .secondary-content {
             display: flex;
-            align-items: center;
-            gap: 40px;
-            max-width: 1000px;
+            flex-direction: column;
+            gap: 30px;
+            max-width: 800px;
             margin: 60px auto;
-            padding: 40px;
+            padding: 0;
+            background: none;
+            border-radius: 0;
+            border: none;
+            min-height: auto;
+            overflow: hidden;
+        }
+
+        .secondary-photo-container {
+            width: 100%;
+            height: 400px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            border: 3px solid var(--gold);
+        }
+
+        .secondary-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .secondary-photo:hover {
+            transform: scale(1.05);
+        }
+
+        .secondary-text-container {
+            text-align: center;
+            padding: 30px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 20px;
             border: 2px solid rgba(255, 215, 0, 0.3);
         }
 
-        .secondary-text {
-            flex: 1;
-            text-align: left;
-        }
-
-        .secondary-text h3 {
+        .secondary-text-container h3 {
             color: var(--gold);
-            font-size: 2rem;
+            font-size: 2.2rem;
             margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
         }
 
-        .secondary-text p {
+        .secondary-text-container p {
             font-size: 1.2rem;
             line-height: 1.8;
             color: white;
+            text-align: left;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 10px;
         }
 
-        .secondary-photo {
-            flex: 0 0 300px;
-            height: 400px;
-            object-fit: cover;
-            border-radius: 15px;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
-            border: 3px solid var(--gold);
-            transition: transform 0.3s ease;
+        .secondary-text-container p::-webkit-scrollbar {
+            width: 6px;
         }
 
-        .secondary-photo:hover {
-            transform: scale(1.03);
+        .secondary-text-container p::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+
+        .secondary-text-container p::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 3px;
         }
 
         /* Карточки */
@@ -1171,10 +1250,126 @@
             border: 2px solid white;
         }
 
+        /* Кнопка назад в настройках */
+        .back-btn {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-btn:hover {
+            transform: scale(1.2);
+        }
+
+        /* Модальное окно подтверждения выхода */
+        .exit-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10003;
+        }
+
+        .exit-modal.active {
+            display: flex;
+        }
+
+        .exit-modal-content {
+            background: linear-gradient(135deg, #1a237e 0%, #311b92 100%);
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            border: 3px solid var(--gold);
+        }
+
+        .exit-modal h3 {
+            color: var(--gold);
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
+        .exit-modal p {
+            color: white;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .exit-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .exit-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .exit-btn.confirm {
+            background: linear-gradient(45deg, var(--red), #c0392b);
+            color: white;
+        }
+
+        .exit-btn.cancel {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid var(--gold);
+        }
+
+        .exit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Индикатор сохранения */
+        .save-indicator {
+            position: fixed;
+            bottom: 100px;
+            left: 30px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #2ecc71;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            border: 2px solid #2ecc71;
+        }
+
+        .save-indicator.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
         /* Адаптивность */
         @media (max-width: 768px) {
             .settings-panel {
                 width: 100%;
+                right: -100%;
+            }
+            
+            .settings-panel.closing {
                 right: -100%;
             }
             
@@ -1241,12 +1436,23 @@
                 flex-direction: column;
                 padding: 20px;
                 gap: 30px;
+                min-height: auto;
             }
             
-            .secondary-photo {
-                width: 100%;
+            .secondary-photo-container {
                 height: 300px;
-                flex: none;
+            }
+            
+            .secondary-text-container {
+                padding: 20px;
+            }
+            
+            .secondary-text-container h3 {
+                font-size: 1.8rem;
+            }
+            
+            .secondary-text-container p {
+                font-size: 1rem;
             }
         }
 
@@ -1270,15 +1476,18 @@
             
             .secondary-content {
                 margin: 30px auto;
-                padding: 15px;
             }
             
-            .secondary-text h3 {
+            .secondary-photo-container {
+                height: 250px;
+            }
+            
+            .secondary-text-container h3 {
                 font-size: 1.5rem;
             }
             
-            .secondary-text p {
-                font-size: 1rem;
+            .secondary-text-container p {
+                font-size: 0.95rem;
             }
         }
     </style>
@@ -1292,13 +1501,15 @@
 
     <!-- Аудиоплеер -->
     <div class="audio-controls">
-        <button class="audio-btn" id="playBtn">
-            <i class="fas fa-play"></i>
-        </button>
-        <button class="audio-btn" id="pauseBtn">
-            <i class="fas fa-pause"></i>
+        <button class="audio-btn" id="musicToggleBtn">
+            <i class="fas fa-play" id="musicIcon"></i>
         </button>
         <input type="range" min="0" max="100" value="50" class="volume-slider" id="volumeSlider">
+    </div>
+
+    <!-- Индикатор сохранения -->
+    <div class="save-indicator" id="saveIndicator">
+        <i class="fas fa-check-circle"></i> Настройки сохранены!
     </div>
 
     <!-- Аудио для фоновой музыки -->
@@ -1331,8 +1542,20 @@
         </div>
     </div>
 
+    <!-- Модальное окно подтверждения выхода -->
+    <div class="exit-modal" id="exitModal">
+        <div class="exit-modal-content">
+            <h3>Несохраненные изменения</h3>
+            <p>У вас есть несохраненные изменения. Вы уверены, что хотите закрыть вкладку?</p>
+            <div class="exit-buttons">
+                <button class="exit-btn confirm" id="exitConfirm">Да, закрыть</button>
+                <button class="exit-btn cancel" id="exitCancel">Отмена</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Окно авторизации -->
-    <div class="auth-container" id="authContainer">
+    <div class="auth-container hidden" id="authContainer">
         <div class="auth-box">
             <h1 class="auth-title">🔐 Редактирование</h1>
             <p class="auth-subtitle">Войдите для редактирования портфолио</p>
@@ -1349,7 +1572,8 @@
             <p style="color: rgba(255, 255, 255, 0.7); margin-top: 20px; font-size: 0.9rem;">
                 Доступные аккаунты:<br>
                 • Frutaz2013 / 12345<br>
-                • Semechka2013 / 12345
+                • Semechka2013 / 12345<br>
+                • Timur2012 / 12345
             </p>
         </div>
     </div>
@@ -1378,6 +1602,15 @@
 
     <!-- Панель настроек -->
     <div class="settings-panel" id="settingsPanel">
+        <!-- Кнопка сохранения вверху -->
+        <button class="save-top-btn" id="saveTopBtn" title="Сохранить настройки">
+            <i class="fas fa-save"></i> Сохранить
+        </button>
+        
+        <button class="back-btn" id="backBtn" title="Назад">
+            <i class="fas fa-arrow-left"></i>
+        </button>
+        
         <div class="settings-header">
             <h2><i class="fas fa-cog"></i> Настройки портфолио</h2>
             <button class="close-settings" id="closeSettings">
@@ -1442,7 +1675,7 @@
                             <input type="file" id="secondaryPhotoFile" class="file-input" accept="image/*">
                         </button>
                     </div>
-                    <textarea id="secondaryText" class="form-control" rows="3" placeholder="Текст рядом с фото"></textarea>
+                    <textarea id="secondaryText" class="form-control" rows="3" placeholder="Текст под фото"></textarea>
                 </div>
             </div>
             
@@ -1459,7 +1692,7 @@
                 </div>
             </div>
             
-            <!-- Настройки занятий -->
+            <!-- Настройки занятий и навыков -->
             <div class="settings-section">
                 <h3><i class="fas fa-graduation-cap"></i> Занятия и навыки</h3>
                 <div id="activitiesContainer">
@@ -1504,12 +1737,18 @@
                     <label>Куда хожу (через запятую):</label>
                     <input type="text" id="places" class="form-control" placeholder="Спортзал, курсы английского, библиотека">
                 </div>
-            </div>
-            
-            <div class="settings-section">
-                <button class="btn" id="saveSettings" style="width: 100%; padding: 15px; font-size: 1.1rem;">
-                    <i class="fas fa-save"></i> Сохранить все настройки
-                </button>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <input type="text" id="email" class="form-control" placeholder="example@email.com">
+                </div>
+                <div class="form-group">
+                    <label>Telegram:</label>
+                    <input type="text" id="telegram" class="form-control" placeholder="@username">
+                </div>
+                <div class="form-group">
+                    <label>ВКонтакте:</label>
+                    <input type="text" id="vk" class="form-control" placeholder="vk.com/username">
+                </div>
             </div>
         </div>
         
@@ -1525,8 +1764,8 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <button class="btn btn-secondary" id="toggleMusic">
-                        <i class="fas fa-music"></i> Включить/выключить музыку
+                    <button class="btn" id="toggleMusicBtn">
+                        <i class="fas fa-music"></i> <span id="toggleMusicText">Включить музыку</span>
                     </button>
                 </div>
             </div>
@@ -1571,6 +1810,12 @@
                     <small style="opacity: 0.7;">Создано с помощью HTML, CSS и JavaScript</small>
                 </p>
             </div>
+            
+            <div class="settings-section">
+                <button class="btn" id="saveSettings" style="width: 100%; padding: 15px; font-size: 1.1rem;">
+                    <i class="fas fa-save"></i> Сохранить все настройки
+                </button>
+            </div>
         </div>
     </div>
 
@@ -1598,9 +1843,13 @@
                     С наступающим Новым годом! 🎄
                 </p>
                 
-                <!-- Второстепенное фото с текстом -->
+                <!-- Второстепенное фото с текстом (новый стиль) -->
                 <div class="secondary-content" id="secondaryContent">
-                    <div class="secondary-text">
+                    <div class="secondary-photo-container">
+                        <img src="https://images.unsplash.com/photo-1517697471339-4aa32003c11a?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
+                             alt="Дополнительное фото" class="secondary-photo" id="secondaryPhotoImg">
+                    </div>
+                    <div class="secondary-text-container">
                         <h3>О моих увлечениях</h3>
                         <p id="secondaryTextContent">
                             Мне нравится изучать новые технологии и создавать интересные проекты. 
@@ -1608,8 +1857,6 @@
                             Верю, что постоянное развитие - ключ к успеху в любом деле!
                         </p>
                     </div>
-                    <img src="https://images.unsplash.com/photo-1517697471339-4aa32003c11a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
-                         alt="Дополнительное фото" class="secondary-photo" id="secondaryPhotoImg">
                 </div>
             </div>
         </div>
@@ -1693,8 +1940,10 @@
         const accountMenu = document.getElementById('accountMenu');
         const noAuthBtn = document.getElementById('noAuthBtn');
         
-        const menuBtn = document.getElementById('menuBtn');
+        const saveIndicator = document.getElementById('saveIndicator');
         const settingsPanel = document.getElementById('settingsPanel');
+        const saveTopBtn = document.getElementById('saveTopBtn');
+        const backBtn = document.getElementById('backBtn');
         const closeSettings = document.getElementById('closeSettings');
         const toggleTheme = document.getElementById('toggleTheme');
         const saveSettings = document.getElementById('saveSettings');
@@ -1707,14 +1956,20 @@
         const activitiesContainer = document.getElementById('activitiesContainer');
         const projectsContainer = document.getElementById('projectsContainer');
         
+        // Выход
+        const exitModal = document.getElementById('exitModal');
+        const exitConfirm = document.getElementById('exitConfirm');
+        const exitCancel = document.getElementById('exitCancel');
+        
         // Музыка и звук
         const backgroundMusic = document.getElementById('backgroundMusic');
-        const playBtn = document.getElementById('playBtn');
-        const pauseBtn = document.getElementById('pauseBtn');
+        const musicToggleBtn = document.getElementById('musicToggleBtn');
+        const musicIcon = document.getElementById('musicIcon');
         const volumeSlider = document.getElementById('volumeSlider');
         const musicVolume = document.getElementById('musicVolume');
         const musicVolumeValue = document.getElementById('musicVolumeValue');
-        const toggleMusic = document.getElementById('toggleMusic');
+        const toggleMusicBtn = document.getElementById('toggleMusicBtn');
+        const toggleMusicText = document.getElementById('toggleMusicText');
         
         // Тема и фон
         const bgColor = document.getElementById('bgColor');
@@ -1762,22 +2017,10 @@
             ],
             projects: [
                 { 
-                    title: "Новогодний сайт", 
-                    description: "Создал праздничный сайт с анимациями и снегом",
-                    image: "https://images.unsplash.com/photo-1482517967863-00e15c9b44be?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
-                    details: "Этот проект был создан для празднования Нового Года. Включает анимированный снег, новогоднюю музыку и праздничный дизайн. Использованы технологии: HTML5, CSS3, JavaScript."
-                },
-                { 
-                    title: "Школьный проект", 
-                    description: "Интерактивная презентация по физике",
-                    image: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
-                    details: "Интерактивная презентация по теме 'Законы Ньютона'. Содержит анимации, эксперименты и тесты для проверки знаний. Проект был представлен на школьной научной конференции и получил высокую оценку."
-                },
-                { 
-                    title: "Портфолио", 
-                    description: "Это портфолио с настройками и анимациями",
-                    image: "https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
-                    details: "Интерактивное портфолио с возможностью настройки всех элементов. Поддерживает несколько аккаунтов, загрузку фото и проектов. Имеет новогоднее оформление с анимациями и музыкой."
+                    title: "Мой первый проект", 
+                    description: "Портфолио с настройками и анимациями",
+                    image: "",
+                    details: "Это мой первый проект - интерактивное портфолио. Здесь я реализовал возможность настройки всех элементов, добавления проектов и сохранения настроек для каждого аккаунта отдельно."
                 }
             ],
             personalInfo: {
@@ -1786,14 +2029,17 @@
                 phone: "+7 (999) 123-45-67",
                 school: "Школа №1",
                 hobbies: "Программирование, музыка, спорт, чтение",
-                places: "Спортзал, курсы английского, библиотека"
+                places: "Спортзал, курсы английского, библиотека",
+                email: "example@email.com",
+                telegram: "@username",
+                vk: "vk.com/username"
             },
             settings: {
                 mainTitle: "Алексей Иванов",
                 description: "Привет! Я учусь в школе и активно развиваюсь в различных направлениях. Люблю программирование, дизайн и спорт. Всегда открыт для новых знаний и интересных проектов. С наступающим Новым годом! 🎄",
-                mainPhoto: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-                bgPhoto: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
-                secondaryPhoto: "https://images.unsplash.com/photo-1517697471339-4aa32003c11a?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+                mainPhoto: "",
+                bgPhoto: "",
+                secondaryPhoto: "",
                 secondaryText: "Мне нравится изучать новые технологии и создавать интересные проекты. В свободное время занимаюсь спортом, читаю книги и учусь играть на гитаре. Верю, что постоянное развитие - ключ к успеху в любом деле!",
                 theme: "dark",
                 bgColor: "#0c1b33",
@@ -1816,22 +2062,10 @@
             ],
             projects: [
                 { 
-                    title: "Фотогалерея", 
-                    description: "Онлайн галерея с работами по фотографии",
-                    image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
-                    details: "Веб-приложение для демонстрации фотографий с фильтрами и категориями. Реализована адаптивная верстка и lazy loading изображений."
-                },
-                { 
-                    title: "Дизайн логотипов", 
-                    description: "Коллекция созданных логотипов для разных компаний",
-                    image: "https://images.unsplash.com/photo-1611224923853-80b023f02d71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
-                    details: "Собрание работ по дизайну логотипов. Каждый логотип создавался с учетом брендинга компании и целевой аудитории."
-                },
-                { 
-                    title: "Игра на JavaScript", 
-                    description: "Аркадная игра с использованием Canvas API",
-                    image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
-                    details: "Классическая аркадная игра с системами очков, уровнями сложности и сохранением прогресса. Использован Canvas для отрисовки графики."
+                    title: "Мой первый проект", 
+                    description: "Портфолио с настройками и анимациями",
+                    image: "",
+                    details: "Это мой первый проект - интерактивное портфолио. Здесь я реализовал возможность настройки всех элементов, добавления проектов и сохранения настроек для каждого аккаунта отдельно."
                 }
             ],
             personalInfo: {
@@ -1840,15 +2074,63 @@
                 phone: "+7 (911) 234-56-78",
                 school: "Гимназия №2",
                 hobbies: "Фотография, дизайн, программирование, видеоигры",
-                places: "Фотостудия, IT-курсы, спортзал, кинотеатр"
+                places: "Фотостудия, IT-курсы, спортзал, кинотеатр",
+                email: "semen@email.com",
+                telegram: "@semen_t",
+                vk: "vk.com/semen_t"
             },
             settings: {
                 mainTitle: "Семен Терентьев",
                 description: "Привет! Я увлекаюсь программированием и дизайном. Люблю создавать красивые и функциональные интерфейсы. В свободное время занимаюсь фотографией и изучаю новые технологии в IT. Мечтаю стать full-stack разработчиком! 🚀",
-                mainPhoto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-                bgPhoto: "https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
-                secondaryPhoto: "https://images.unsplash.com/photo-1542744095-fcf48d80b0fd?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+                mainPhoto: "",
+                bgPhoto: "",
+                secondaryPhoto: "",
                 secondaryText: "Моя страсть - это создание цифровых продуктов. Я начинал с простых сайтов, а теперь разрабатываю сложные веб-приложения. Уверен, что будущее за технологиями, и хочу быть частью этого будущего!",
+                theme: "dark",
+                bgColor: "#0c1b33",
+                snowEnabled: true,
+                snowIntensity: 100,
+                musicEnabled: true,
+                musicVolume: 50
+            }
+        };
+        
+        // Данные для аккаунта Timur2012
+        const timurData = {
+            activities: [
+                { name: "Веб-разработка", percent: 88 },
+                { name: "UI/UX дизайн", percent: 82 },
+                { name: "Мобильные приложения", percent: 75 },
+                { name: "Базы данных", percent: 70 },
+                { name: "Аналитика данных", percent: 65 },
+                { name: "Кибербезопасность", percent: 60 }
+            ],
+            projects: [
+                { 
+                    title: "Мой первый проект", 
+                    description: "Портфолио с настройками и анимациями",
+                    image: "",
+                    details: "Это мой первый проект - интерактивное портфолио. Здесь я реализовал возможность настройки всех элементов, добавления проектов и сохранения настроек для каждого аккаунта отдельно."
+                }
+            ],
+            personalInfo: {
+                age: "18",
+                city: "Казань",
+                phone: "+7 (912) 345-67-89",
+                school: "Лицей №3",
+                hobbies: "Веб-разработка, киберспорт, путешествия, фотография",
+                places: "IT-курсы, спортзал, языковая школа, кофейня",
+                email: "timur@email.com",
+                telegram: "@timur_dev",
+                vk: "vk.com/timur_dev"
+            },
+            settings: {
+                mainTitle: "Тимур Сафин",
+                description: "Привет! Я занимаюсь веб-разработкой и дизайном интерфейсов. Увлекаюсь созданием современных и удобных веб-приложений. Постоянно изучаю новые технологии и фреймворки. Стремлюсь к созданию качественных digital-продуктов! 💻",
+                mainPhoto: "",
+                bgPhoto: "",
+                secondaryPhoto: "",
+                secondaryText: "Считаю, что хороший интерфейс должен быть не только красивым, но и функциональным. В работе уделяю внимание деталям и пользовательскому опыту. Люблю сложные задачи и находить оптимальные решения.",
                 theme: "dark",
                 bgColor: "#0c1b33",
                 snowEnabled: true,
@@ -1863,13 +2145,20 @@
         let accounts = {
             "noauth": JSON.parse(JSON.stringify(defaultData)),
             "frutaz2013": JSON.parse(JSON.stringify(defaultData)),
-            "semechka2013": JSON.parse(JSON.stringify(semechkaData))
+            "semechka2013": JSON.parse(JSON.stringify(semechkaData)),
+            "timur2012": JSON.parse(JSON.stringify(timurData))
         };
         
         let isEditing = false;
         let snowEnabled = true;
-        let isScrolling = false;
-        let scrollTimeout;
+        let hasUnsavedChanges = false;
+        let isClosingSettings = false;
+        let musicAutoStarted = false;
+        let musicManuallyToggled = false;
+        
+        // URL для стандартных изображений
+        const defaultHeroImage = "hero.png";
+        const defaultProjectImage = "hero.png";
         
         // ==================== ИНИЦИАЛИЗАЦИЯ ====================
         document.addEventListener('DOMContentLoaded', function() {
@@ -1912,10 +2201,25 @@
             // Инициализация музыки
             initMusic();
             
+            // Инициализация обработчиков изменений
+            initChangeHandlers();
+            
+            // Инициализация кнопки сохранения сверху
+            saveTopBtn.addEventListener('click', saveAllSettings);
+            
             // Показываем первую секцию
             setTimeout(() => {
                 showSection(0);
             }, 300);
+            
+            // Обработчик перед закрытием вкладки
+            window.addEventListener('beforeunload', handleBeforeUnload);
+            
+            // Обработчик клика вне настроек
+            document.addEventListener('click', handleClickOutsideSettings);
+            
+            // Автозапуск музыки при первом заходе
+            autoStartMusic();
         });
         
         // ==================== СИСТЕМА АККАУНТОВ ====================
@@ -1927,13 +2231,15 @@
                     // Проверяем наличие стандартных аккаунтов
                     if (!accounts.frutaz2013) accounts.frutaz2013 = JSON.parse(JSON.stringify(defaultData));
                     if (!accounts.semechka2013) accounts.semechka2013 = JSON.parse(JSON.stringify(semechkaData));
+                    if (!accounts.timur2012) accounts.timur2012 = JSON.parse(JSON.stringify(timurData));
                 } catch(e) {
                     console.error("Ошибка загрузки аккаунтов:", e);
                     // Если ошибка, используем стандартные аккаунты
                     accounts = {
                         "noauth": JSON.parse(JSON.stringify(defaultData)),
                         "frutaz2013": JSON.parse(JSON.stringify(defaultData)),
-                        "semechka2013": JSON.parse(JSON.stringify(semechkaData))
+                        "semechka2013": JSON.parse(JSON.stringify(semechkaData)),
+                        "timur2012": JSON.parse(JSON.stringify(timurData))
                     };
                 }
             }
@@ -1953,13 +2259,14 @@
             accountItems.forEach(item => item.remove());
             
             // Добавляем существующие аккаунты в определенном порядке
-            const accountOrder = ["frutaz2013", "semechka2013"];
+            const accountOrder = ["frutaz2013", "semechka2013", "timur2012"];
             
             // Сначала добавляем основные аккаунты
             accountOrder.forEach(accountId => {
                 if (accounts[accountId]) {
                     const accountName = accountId === "frutaz2013" ? "Frutaz2013" : 
-                                      accountId === "semechka2013" ? "Semechka2013" : accountId;
+                                      accountId === "semechka2013" ? "Semechka2013" :
+                                      accountId === "timur2012" ? "Timur2012" : accountId;
                     const accountItem = createAccountItem(accountId, accountName);
                     accountMenu.appendChild(accountItem);
                 }
@@ -1967,7 +2274,7 @@
             
             // Затем добавляем остальные аккаунты
             for (const accountId in accounts) {
-                if (!["noauth", "frutaz2013", "semechka2013"].includes(accountId)) {
+                if (!["noauth", "frutaz2013", "semechka2013", "timur2012"].includes(accountId)) {
                     const accountItem = createAccountItem(accountId, accountId);
                     accountMenu.appendChild(accountItem);
                 }
@@ -2002,7 +2309,7 @@
             accountItem.addEventListener('click', () => switchAccount(accountId));
             
             // Добавляем кнопку удаления для пользовательских аккаунтов
-            if (!["frutaz2013", "semechka2013"].includes(accountId)) {
+            if (!["frutaz2013", "semechka2013", "timur2012"].includes(accountId)) {
                 const deleteBtn = document.createElement('button');
                 deleteBtn.innerHTML = '<i class="fas fa-times"></i>';
                 deleteBtn.style.cssText = `
@@ -2037,6 +2344,14 @@
         }
         
         function switchAccount(accountId) {
+            // Проверяем, есть ли несохраненные изменения
+            if (hasUnsavedChanges && currentAccount !== "noauth") {
+                if (!confirm("У вас есть несохраненные изменения. Переключиться на другой аккаунт без сохранения?")) {
+                    return;
+                }
+                hasUnsavedChanges = false;
+            }
+            
             if (!accounts[accountId]) {
                 accounts[accountId] = JSON.parse(JSON.stringify(defaultData));
                 saveAccounts();
@@ -2059,6 +2374,8 @@
                     item.classList.add('active');
                 } else if (accountId === "semechka2013" && itemText.includes("Semechka2013")) {
                     item.classList.add('active');
+                } else if (accountId === "timur2012" && itemText.includes("Timur2012")) {
+                    item.classList.add('active');
                 } else if (itemText.includes(accountId)) {
                     item.classList.add('active');
                 }
@@ -2073,7 +2390,10 @@
             // Если переключились на аккаунт без авторизации и были в режиме редактирования
             if (accountId === "noauth" && isEditing) {
                 isEditing = false;
-                settingsPanel.classList.remove('active');
+                settingsPanel.classList.add('closing');
+                setTimeout(() => {
+                    settingsPanel.classList.remove('active', 'closing');
+                }, 500);
             }
             
             // Прокручиваем наверх
@@ -2083,12 +2403,61 @@
         function loadAccountData() {
             const accountData = accounts[currentAccount];
             
-            // Обновляем интерфейс
+            // Функция для получения фото с проверкой на существование
+            function getPhotoWithFallback(photoUrl, defaultImage, isBackground = false) {
+                if (!photoUrl || photoUrl.trim() === '') {
+                    // Для фонового фото не используем дефолтное изображение
+                    if (isBackground) {
+                        return "";
+                    }
+                    return defaultImage;
+                }
+                
+                // Проверяем, является ли URL data URL
+                if (photoUrl.startsWith('data:image')) {
+                    return photoUrl;
+                }
+                
+                // Проверяем, является ли URL внешним
+                if (photoUrl.startsWith('http')) {
+                    return photoUrl;
+                }
+                
+                // Если это локальный файл, проверяем его существование
+                // В реальном проекте здесь была бы проверка файла
+                // Для демо просто используем defaultImage если не http и не data URL
+                if (isBackground) {
+                    return photoUrl; // Для фона возвращаем как есть
+                }
+                return defaultImage;
+            }
+            
+            // Обновляем интерфейс с проверкой фото
             mainTitleText.textContent = accountData.settings.mainTitle;
             descriptionText.textContent = accountData.settings.description;
-            mainPhotoImg.src = accountData.settings.mainPhoto;
-            backgroundPhoto.src = accountData.settings.bgPhoto;
-            secondaryPhotoImg.src = accountData.settings.secondaryPhoto;
+            
+            // Главное фото с проверкой
+            const mainPhotoUrl = getPhotoWithFallback(accountData.settings.mainPhoto, defaultHeroImage, false);
+            mainPhotoImg.src = mainPhotoUrl;
+            mainPhotoImg.onerror = function() {
+                this.src = defaultHeroImage;
+            };
+            
+            // Фоновое фото с проверкой (без дефолтного изображения)
+            const bgPhotoUrl = getPhotoWithFallback(accountData.settings.bgPhoto, "", true);
+            if (bgPhotoUrl) {
+                backgroundPhoto.src = bgPhotoUrl;
+            } else {
+                backgroundPhoto.src = "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80";
+            }
+            
+            // Второстепенное фото с проверкой
+            const secondaryPhotoUrl = getPhotoWithFallback(accountData.settings.secondaryPhoto, defaultHeroImage, false);
+            secondaryPhotoImg.src = secondaryPhotoUrl;
+            secondaryPhotoImg.onerror = function() {
+                this.src = defaultHeroImage;
+            };
+            
             secondaryTextContent.textContent = accountData.settings.secondaryText;
             
             // Применяем тему
@@ -2114,6 +2483,9 @@
             musicVolumeValue.textContent = `${accountData.settings.musicVolume}%`;
             backgroundMusic.volume = accountData.settings.musicVolume / 100;
             
+            // Обновляем состояние кнопки музыки
+            updateMusicButton();
+            
             // Обновляем поля в настройках
             document.getElementById('mainPhoto').value = accountData.settings.mainPhoto;
             document.getElementById('bgPhoto').value = accountData.settings.bgPhoto;
@@ -2127,6 +2499,9 @@
             document.getElementById('school').value = accountData.personalInfo.school;
             document.getElementById('hobbies').value = accountData.personalInfo.hobbies;
             document.getElementById('places').value = accountData.personalInfo.places;
+            document.getElementById('email').value = accountData.personalInfo.email;
+            document.getElementById('telegram').value = accountData.personalInfo.telegram;
+            document.getElementById('vk').value = accountData.personalInfo.vk;
             
             // Перерисовываем навыки и проекты
             renderActivitiesInSettings();
@@ -2136,10 +2511,14 @@
             renderPersonalInfo();
             renderContacts();
             
+            // Сбрасываем флаг несохраненных изменений
+            hasUnsavedChanges = false;
+            
             // Показываем уведомление
             if (currentAccount !== "noauth") {
                 const accountName = currentAccount === "frutaz2013" ? "Frutaz2013" : 
-                                  currentAccount === "semechka2013" ? "Semechka2013" : currentAccount;
+                                  currentAccount === "semechka2013" ? "Semechka2013" :
+                                  currentAccount === "timur2012" ? "Timur2012" : currentAccount;
                 showNotification(`Аккаунт: ${accountName}`);
             }
         }
@@ -2159,6 +2538,7 @@
             accountData.settings.snowEnabled = snowEnabled;
             accountData.settings.snowIntensity = parseInt(snowIntensity.value);
             accountData.settings.musicVolume = parseInt(musicVolume.value);
+            accountData.settings.musicEnabled = !backgroundMusic.paused;
             
             // Сохраняем личную информацию
             accountData.personalInfo.age = document.getElementById('age').value || accountData.personalInfo.age;
@@ -2167,9 +2547,17 @@
             accountData.personalInfo.school = document.getElementById('school').value || accountData.personalInfo.school;
             accountData.personalInfo.hobbies = document.getElementById('hobbies').value || accountData.personalInfo.hobbies;
             accountData.personalInfo.places = document.getElementById('places').value || accountData.personalInfo.places;
+            accountData.personalInfo.email = document.getElementById('email').value || accountData.personalInfo.email;
+            accountData.personalInfo.telegram = document.getElementById('telegram').value || accountData.personalInfo.telegram;
+            accountData.personalInfo.vk = document.getElementById('vk').value || accountData.personalInfo.vk;
             
-            // Сохраняем аккаунты
             saveAccounts();
+            
+            // Сбрасываем флаг несохраненных изменений
+            hasUnsavedChanges = false;
+            
+            // Показываем индикатор сохранения
+            showSaveIndicator();
         }
         
         function addAccount() {
@@ -2208,7 +2596,8 @@
             const password = document.getElementById('authPassword').value;
             
             if ((username === 'Frutaz2013' && password === '12345') || 
-                (username === 'Semechka2013' && password === '12345')) {
+                (username === 'Semechka2013' && password === '12345') ||
+                (username === 'Timur2012' && password === '12345')) {
                 authSuccess(username.toLowerCase());
             } else {
                 authError.style.display = 'block';
@@ -2241,6 +2630,14 @@
         });
         
         noAuthBtn.addEventListener('click', function() {
+            // Проверяем, есть ли несохраненные изменения
+            if (hasUnsavedChanges && currentAccount !== "noauth") {
+                if (!confirm("У вас есть несохраненные изменения. Переключиться без сохранения?")) {
+                    return;
+                }
+                hasUnsavedChanges = false;
+            }
+            
             switchAccount("noauth");
             showNotification('Режим просмотра (без авторизации)');
         });
@@ -2255,9 +2652,29 @@
         addAccountBtn.addEventListener('click', addAccount);
         
         // ==================== НАСТРОЙКИ ====================
-        closeSettings.addEventListener('click', () => {
-            settingsPanel.classList.remove('active');
-        });
+        backBtn.addEventListener('click', closeSettingsPanel);
+        
+        closeSettings.addEventListener('click', closeSettingsPanel);
+        
+        function closeSettingsPanel() {
+            if (isClosingSettings) return;
+            
+            isClosingSettings = true;
+            settingsPanel.classList.add('closing');
+            
+            setTimeout(() => {
+                settingsPanel.classList.remove('active', 'closing');
+                isClosingSettings = false;
+            }, 500);
+        }
+        
+        function handleClickOutsideSettings(e) {
+            if (settingsPanel.classList.contains('active') && 
+                !settingsPanel.contains(e.target) && 
+                !editBtn.contains(e.target)) {
+                closeSettingsPanel();
+            }
+        }
         
         // Предотвращаем прокрутку основного сайта при прокрутке настроек
         settingsPanel.addEventListener('wheel', function(e) {
@@ -2266,21 +2683,21 @@
         
         toggleTheme.addEventListener('click', () => {
             document.body.classList.toggle('light-theme');
-            saveAccountData();
+            markAsChanged();
         });
         
         // Цвет фона
         bgColor.addEventListener('input', function() {
             bgColorText.value = this.value;
             document.body.style.backgroundColor = this.value;
-            saveAccountData();
+            markAsChanged();
         });
         
         bgColorText.addEventListener('input', function() {
             if (this.value.match(/^#[0-9A-F]{6}$/i)) {
                 bgColor.value = this.value;
                 document.body.style.backgroundColor = this.value;
-                saveAccountData();
+                markAsChanged();
             }
         });
         
@@ -2292,7 +2709,7 @@
                     const reader = new FileReader();
                     reader.onload = function(event) {
                         targetElement.src = event.target.result;
-                        saveAccountData();
+                        markAsChanged();
                     };
                     reader.readAsDataURL(file);
                 }
@@ -2305,47 +2722,59 @@
         
         // Изменение полей в реальном времени
         document.getElementById('mainPhoto').addEventListener('input', function() {
-            if (this.value.startsWith('http')) {
+            if (this.value.trim() !== '') {
                 mainPhotoImg.src = this.value;
-                saveAccountData();
+                markAsChanged();
             }
         });
         
         document.getElementById('bgPhoto').addEventListener('input', function() {
-            if (this.value.startsWith('http')) {
+            if (this.value.trim() !== '') {
                 backgroundPhoto.src = this.value;
-                saveAccountData();
+                markAsChanged();
             }
         });
         
         document.getElementById('secondaryPhoto').addEventListener('input', function() {
-            if (this.value.startsWith('http')) {
+            if (this.value.trim() !== '') {
                 secondaryPhotoImg.src = this.value;
-                saveAccountData();
+                markAsChanged();
             }
         });
         
         document.getElementById('secondaryText').addEventListener('input', function() {
             secondaryTextContent.textContent = this.value;
-            saveAccountData();
+            markAsChanged();
         });
         
         document.getElementById('mainTitle').addEventListener('input', function() {
             mainTitleText.textContent = this.value;
-            saveAccountData();
+            markAsChanged();
         });
         
         document.getElementById('description').addEventListener('input', function() {
             descriptionText.textContent = this.value;
-            saveAccountData();
+            markAsChanged();
         });
+        
+        // Инициализация обработчиков изменений для всех полей
+        function initChangeHandlers() {
+            const fields = [
+                'age', 'city', 'phone', 'school', 'hobbies', 'places',
+                'email', 'telegram', 'vk'
+            ];
+            
+            fields.forEach(field => {
+                document.getElementById(field).addEventListener('input', markAsChanged);
+            });
+        }
         
         // Добавление нового занятия
         addActivity.addEventListener('click', () => {
             accounts[currentAccount].activities.push({ name: "Новое занятие", percent: 50 });
             renderActivitiesInSettings();
             renderSkills();
-            saveAccountData();
+            markAsChanged();
         });
         
         // Добавление нового проекта
@@ -2353,12 +2782,12 @@
             accounts[currentAccount].projects.push({ 
                 title: "Новый проект", 
                 description: "Описание проекта",
-                image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80",
+                image: "",
                 details: "Подробное описание проекта будет здесь..."
             });
             renderProjectsInSettings();
             renderProjects();
-            saveAccountData();
+            markAsChanged();
         });
         
         // Управление снегом
@@ -2366,17 +2795,19 @@
             snowEnabled = !snowEnabled;
             const snowflakes = document.getElementById('snowflakes');
             snowflakes.style.display = snowEnabled ? 'block' : 'none';
-            saveAccountData();
+            markAsChanged();
         });
         
         snowIntensity.addEventListener('input', function() {
             snowIntensityValue.textContent = `${this.value}%`;
             createSnowflakes();
-            saveAccountData();
+            markAsChanged();
         });
         
         // Сохранение настроек
-        saveSettings.addEventListener('click', () => {
+        saveSettings.addEventListener('click', saveAllSettings);
+        
+        function saveAllSettings() {
             // Сохранение занятий
             saveActivitiesFromSettings();
             
@@ -2391,6 +2822,9 @@
             personalInfo.school = document.getElementById('school').value || personalInfo.school;
             personalInfo.hobbies = document.getElementById('hobbies').value || personalInfo.hobbies;
             personalInfo.places = document.getElementById('places').value || personalInfo.places;
+            personalInfo.email = document.getElementById('email').value || personalInfo.email;
+            personalInfo.telegram = document.getElementById('telegram').value || personalInfo.telegram;
+            personalInfo.vk = document.getElementById('vk').value || personalInfo.vk;
             
             saveAccountData();
             
@@ -2401,50 +2835,78 @@
             renderContacts();
             
             // Закрытие панели настроек
-            settingsPanel.classList.remove('active');
+            closeSettingsPanel();
             
             // Уведомление
             showNotification('Настройки сохранены!');
-        });
+        }
         
         // ==================== МУЗЫКА ====================
         function initMusic() {
             // Устанавливаем громкость
             backgroundMusic.volume = accounts[currentAccount].settings.musicVolume / 100;
             
-            // Автовоспроизведение
-            setTimeout(() => {
-                backgroundMusic.play().catch(e => {
-                    console.log("Автовоспроизведение музыки заблокировано. Нажмите Play для запуска.");
-                });
-            }, 1000);
+            // Обновляем состояние кнопки
+            updateMusicButton();
         }
         
-        playBtn.addEventListener('click', () => {
-            backgroundMusic.play();
+        function autoStartMusic() {
+            if (!musicAutoStarted && !musicManuallyToggled) {
+                musicAutoStarted = true;
+                setTimeout(() => {
+                    if (!backgroundMusic.paused) return;
+                    backgroundMusic.play().then(() => {
+                        updateMusicButton();
+                    }).catch(e => {
+                        console.log("Автовоспроизведение музыки заблокировано.");
+                    });
+                }, 1000);
+            }
+        }
+        
+        function updateMusicButton() {
+            if (backgroundMusic.paused) {
+                musicIcon.className = 'fas fa-play';
+                toggleMusicText.textContent = 'Включить музыку';
+            } else {
+                musicIcon.className = 'fas fa-pause';
+                toggleMusicText.textContent = 'Выключить музыку';
+            }
+        }
+        
+        musicToggleBtn.addEventListener('click', () => {
+            if (backgroundMusic.paused) {
+                backgroundMusic.play();
+                musicManuallyToggled = true;
+            } else {
+                backgroundMusic.pause();
+                musicManuallyToggled = true;
+            }
+            updateMusicButton();
+            markAsChanged();
         });
         
-        pauseBtn.addEventListener('click', () => {
-            backgroundMusic.pause();
+        toggleMusicBtn.addEventListener('click', () => {
+            if (backgroundMusic.paused) {
+                backgroundMusic.play();
+                musicManuallyToggled = true;
+            } else {
+                backgroundMusic.pause();
+                musicManuallyToggled = true;
+            }
+            updateMusicButton();
+            markAsChanged();
         });
         
         volumeSlider.addEventListener('input', function() {
             backgroundMusic.volume = this.value / 100;
-            saveAccountData();
+            markAsChanged();
         });
         
         musicVolume.addEventListener('input', function() {
             musicVolumeValue.textContent = `${this.value}%`;
             backgroundMusic.volume = this.value / 100;
-            saveAccountData();
-        });
-        
-        toggleMusic.addEventListener('click', () => {
-            if (backgroundMusic.paused) {
-                backgroundMusic.play();
-            } else {
-                backgroundMusic.pause();
-            }
+            markAsChanged();
         });
         
         // ==================== ПОДАРОК ====================
@@ -2467,14 +2929,15 @@
         function openProjectModal(projectIndex) {
             const project = accounts[currentAccount].projects[projectIndex];
             
-            // Исправляем отображение фото проекта
-            const projectImage = project.image || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80";
+            // Используем фото проекта или стандартное фото
+            const projectImage = project.image && project.image.trim() !== '' ? 
+                               project.image : defaultProjectImage;
             
             projectModalContent.innerHTML = `
                 <button class="close-project-modal" id="closeProjectModal">
                     <i class="fas fa-times"></i>
                 </button>
-                <img src="${projectImage}" alt="${project.title}" class="project-modal-image">
+                <img src="${projectImage}" alt="${project.title}" class="project-modal-image" onerror="this.src='${defaultProjectImage}'">
                 <h2 class="project-modal-title">${project.title}</h2>
                 <p class="project-modal-description">${project.description}</p>
                 <div class="project-details">
@@ -2553,14 +3016,16 @@
                     const value = this.value;
                     percentValue.textContent = `${value}%`;
                     accounts[currentAccount].activities[this.dataset.index].percent = parseInt(value);
-                    saveAccountData();
+                    markAsChanged();
+                    // Обновляем отображение на сайте
+                    renderSkills();
                 });
                 
                 // Обработчик изменения названия
                 const nameInput = activityElement.querySelector('.activity-name');
                 nameInput.addEventListener('input', function() {
                     accounts[currentAccount].activities[index].name = this.value;
-                    saveAccountData();
+                    markAsChanged();
                     renderSkills();
                 });
             });
@@ -2583,8 +3048,7 @@
                         <button class="btn" onclick="removeProject(${index})" style="padding: 5px 10px; background: #dc3545;">Удалить</button>
                     </div>
                     <div style="margin-bottom: 10px;">
-                        <input type="text" class="form-control project-image" value="${project.image || ''}" placeholder="URL изображения проекта">
-                        <small style="color: rgba(255, 255, 255, 0.7);">Или загрузите с компьютера:</small>
+                        <small style="color: rgba(255, 255, 255, 0.7);">Загрузите изображение для проекта:</small>
                         <input type="file" class="form-control project-image-file" accept="image/*" style="margin-top: 5px;">
                     </div>
                     <textarea class="form-control project-description" rows="2" placeholder="Краткое описание">${project.description || ''}</textarea>
@@ -2604,10 +3068,8 @@
                         const reader = new FileReader();
                         reader.onload = function(event) {
                             project.image = event.target.result;
-                            // Обновляем поле URL
-                            projectElement.querySelector('.project-image').value = event.target.result;
-                            // Сохраняем
-                            saveAccountData();
+                            // Помечаем как измененное
+                            markAsChanged();
                             // Перерисовываем проекты
                             renderProjects();
                         };
@@ -2616,19 +3078,17 @@
                 });
                 
                 // Обработчики изменений
-                const inputs = projectElement.querySelectorAll('.project-title, .project-image, .project-description, .project-details');
+                const inputs = projectElement.querySelectorAll('.project-title, .project-description, .project-details');
                 inputs.forEach(input => {
                     input.addEventListener('input', function() {
                         if (this.classList.contains('project-title')) {
                             project.title = this.value;
-                        } else if (this.classList.contains('project-image')) {
-                            project.image = this.value;
                         } else if (this.classList.contains('project-description')) {
                             project.description = this.value;
                         } else if (this.classList.contains('project-details')) {
                             project.details = this.value;
                         }
-                        saveAccountData();
+                        markAsChanged();
                         renderProjects();
                     });
                 });
@@ -2639,6 +3099,9 @@
             skillsContainer.innerHTML = '';
             
             accounts[currentAccount].activities.forEach(activity => {
+                // Если значение 0, не отображаем на сайте
+                if (activity.percent <= 0) return;
+                
                 const skillElement = document.createElement('div');
                 skillElement.className = 'skill-item';
                 skillElement.innerHTML = `
@@ -2667,11 +3130,12 @@
                 const projectElement = document.createElement('div');
                 projectElement.className = 'project-card';
                 
-                // Исправляем отображение фото проекта
-                const projectImage = project.image || "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80";
+                // Используем фото проекта или стандартное фото
+                const projectImage = project.image && project.image.trim() !== '' ? 
+                                   project.image : defaultProjectImage;
                 
                 projectElement.innerHTML = `
-                    <img src="${projectImage}" alt="${project.title}" class="project-image">
+                    <img src="${projectImage}" alt="${project.title}" class="project-image" onerror="this.src='${defaultProjectImage}'">
                     <div class="project-content">
                         <h3 class="project-title">${project.title || "Новый проект"}</h3>
                         <p class="project-description">${project.description || "Описание проекта"}</p>
@@ -2697,6 +3161,9 @@
             ];
             
             infoItems.forEach(item => {
+                // Не отображаем пустые значения
+                if (!item.value || item.value.trim() === '') return;
+                
                 const infoElement = document.createElement('div');
                 infoElement.className = 'info-item';
                 infoElement.innerHTML = `
@@ -2717,14 +3184,17 @@
             
             const contactItems = [
                 { icon: 'fas fa-phone', label: 'Телефон', value: accounts[currentAccount].personalInfo.phone },
+                { icon: 'fas fa-envelope', label: 'Email', value: accounts[currentAccount].personalInfo.email },
+                { icon: 'fas fa-paper-plane', label: 'Telegram', value: accounts[currentAccount].personalInfo.telegram },
+                { icon: 'fas fa-comment', label: 'ВКонтакте', value: accounts[currentAccount].personalInfo.vk },
                 { icon: 'fas fa-city', label: 'Город', value: accounts[currentAccount].personalInfo.city },
-                { icon: 'fas fa-school', label: 'Школа', value: accounts[currentAccount].personalInfo.school },
-                { icon: 'fas fa-envelope', label: 'Email', value: 'example@email.com' },
-                { icon: 'fas fa-paper-plane', label: 'Telegram', value: '@username' },
-                { icon: 'fas fa-comment', label: 'VK', value: 'vk.com/username' }
+                { icon: 'fas fa-school', label: 'Школа', value: accounts[currentAccount].personalInfo.school }
             ];
             
             contactItems.forEach(item => {
+                // Не отображаем пустые значения
+                if (!item.value || item.value.trim() === '') return;
+                
                 const contactElement = document.createElement('div');
                 contactElement.className = 'info-item';
                 contactElement.innerHTML = `
@@ -2753,13 +3223,10 @@
                     });
                 }
             });
-            
-            saveAccountData();
         }
         
         function saveProjectsFromSettings() {
             const projectTitles = document.querySelectorAll('.project-title');
-            const projectImages = document.querySelectorAll('.project-image');
             const projectDescriptions = document.querySelectorAll('.project-description');
             const projectDetails = document.querySelectorAll('.project-details');
             
@@ -2767,30 +3234,47 @@
             
             projectTitles.forEach((input, index) => {
                 if (input.value.trim() !== '') {
-                    accounts[currentAccount].projects.push({
+                    const project = {
                         title: input.value,
-                        image: projectImages[index].value,
                         description: projectDescriptions[index].value,
                         details: projectDetails[index].value
-                    });
+                    };
+                    
+                    // Сохраняем изображение, если оно было загружено
+                    const fileInput = document.querySelectorAll('.project-image-file')[index];
+                    if (fileInput && fileInput.files[0]) {
+                        // В реальном приложении здесь была бы загрузка файла
+                        // Для демо просто сохраняем как data URL
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            project.image = event.target.result;
+                        };
+                        reader.readAsDataURL(fileInput.files[0]);
+                    } else {
+                        // Используем существующее изображение
+                        const existingProject = accounts[currentAccount].projects[index];
+                        if (existingProject) {
+                            project.image = existingProject.image;
+                        }
+                    }
+                    
+                    accounts[currentAccount].projects.push(project);
                 }
             });
-            
-            saveAccountData();
         }
         
         function removeActivity(index) {
             accounts[currentAccount].activities.splice(index, 1);
             renderActivitiesInSettings();
             renderSkills();
-            saveAccountData();
+            markAsChanged();
         }
         
         function removeProject(index) {
             accounts[currentAccount].projects.splice(index, 1);
             renderProjectsInSettings();
             renderProjects();
-            saveAccountData();
+            markAsChanged();
         }
         
         // ==================== СНЕГ ====================
@@ -2840,72 +3324,21 @@
                 });
             });
             
-            // Плавная навигация колесом мыши с исправленной логикой
-            let isScrolling = false;
-            
-            window.addEventListener('wheel', function(e) {
-                if (isScrolling) return;
-                
-                isScrolling = true;
-                
-                // Определяем направление прокрутки
-                const delta = e.deltaY;
-                const currentSection = getCurrentSection();
-                let nextSection = currentSection;
-                
-                if (delta > 50 && currentSection < sections.length - 1) {
-                    nextSection = currentSection + 1;
-                } else if (delta < -50 && currentSection > 0) {
-                    nextSection = currentSection - 1;
-                }
-                
-                if (nextSection !== currentSection) {
-                    scrollToSection(nextSection);
-                }
-                
-                setTimeout(() => {
-                    isScrolling = false;
-                }, 1000);
-            }, { passive: true });
-            
-            // Навигация клавишами
-            window.addEventListener('keydown', function(e) {
-                const currentSection = getCurrentSection();
-                
-                if (e.key === 'ArrowDown' && currentSection < sections.length - 1) {
-                    e.preventDefault();
-                    scrollToSection(currentSection + 1);
-                } else if (e.key === 'ArrowUp' && currentSection > 0) {
-                    e.preventDefault();
-                    scrollToSection(currentSection - 1);
-                } else if (e.key === 'Home') {
-                    e.preventDefault();
-                    scrollToSection(0);
-                } else if (e.key === 'End') {
-                    e.preventDefault();
-                    scrollToSection(sections.length - 1);
-                }
-            });
-            
             // Обновление активной точки при прокрутке
             window.addEventListener('scroll', updateActiveNavDot);
-        }
-        
-        function getCurrentSection() {
-            const scrollPosition = window.scrollY + window.innerHeight / 3;
             
-            for (let i = 0; i < sections.length; i++) {
-                const section = sections[i];
-                const sectionTop = section.offsetTop;
-                const sectionBottom = sectionTop + section.offsetHeight;
+            // Плавный скролл для навигационных точек
+            function scrollToSection(index) {
+                if (index < 0 || index >= sections.length) return;
                 
-                if (scrollPosition >= sectionTop && scrollPosition <= sectionBottom) {
-                    return i;
-                }
+                sections[index].scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+                
+                updateActiveNavDot();
+                showSection(index);
             }
-            
-            // Если не нашли, возвращаем последнюю видимую секцию
-            return Math.min(Math.floor(window.scrollY / window.innerHeight), sections.length - 1);
         }
         
         function initTabs() {
@@ -2956,18 +3389,6 @@
             });
         }
         
-        function scrollToSection(index) {
-            if (index < 0 || index >= sections.length) return;
-            
-            sections[index].scrollIntoView({ 
-                behavior: 'smooth',
-                block: 'start'
-            });
-            
-            updateActiveNavDot();
-            showSection(index);
-        }
-        
         function showSection(index) {
             // Анимация появления секции
             sections[index].classList.add('visible');
@@ -2987,6 +3408,22 @@
             }
         }
         
+        function getCurrentSection() {
+            const scrollPosition = window.scrollY + window.innerHeight / 3;
+            
+            for (let i = 0; i < sections.length; i++) {
+                const section = sections[i];
+                const sectionTop = section.offsetTop;
+                const sectionBottom = sectionTop + section.offsetHeight;
+                
+                if (scrollPosition >= sectionTop && scrollPosition <= sectionBottom) {
+                    return i;
+                }
+            }
+            
+            return 0;
+        }
+        
         function animateVisibleSkills() {
             const skillProgresses = document.querySelectorAll('.skill-progress');
             
@@ -2999,6 +3436,40 @@
                 }, 100);
             });
         }
+        
+        // ==================== ОБРАБОТКА ИЗМЕНЕНИЙ ====================
+        function markAsChanged() {
+            if (currentAccount !== "noauth" && isEditing) {
+                hasUnsavedChanges = true;
+            }
+        }
+        
+        function showSaveIndicator() {
+            saveIndicator.classList.add('visible');
+            setTimeout(() => {
+                saveIndicator.classList.remove('visible');
+            }, 3000);
+        }
+        
+        // ==================== ОБРАБОТКА ВЫХОДА ====================
+        function handleBeforeUnload(e) {
+            if (hasUnsavedChanges && currentAccount !== "noauth") {
+                e.preventDefault();
+                e.returnValue = 'У вас есть несохраненные изменения. Вы уверены, что хотите закрыть вкладку?';
+                exitModal.classList.add('active');
+                return e.returnValue;
+            }
+        }
+        
+        exitConfirm.addEventListener('click', function() {
+            exitModal.classList.remove('active');
+            // Разрешаем закрытие вкладки
+            hasUnsavedChanges = false;
+        });
+        
+        exitCancel.addEventListener('click', function() {
+            exitModal.classList.remove('active');
+        });
         
         // ==================== УВЕДОМЛЕНИЯ ====================
         function showNotification(message) {
@@ -3060,13 +3531,46 @@
             document.getElementById('school').value = accountData.personalInfo.school;
             document.getElementById('hobbies').value = accountData.personalInfo.hobbies;
             document.getElementById('places').value = accountData.personalInfo.places;
+            document.getElementById('email').value = accountData.personalInfo.email;
+            document.getElementById('telegram').value = accountData.personalInfo.telegram;
+            document.getElementById('vk').value = accountData.personalInfo.vk;
+        }
+    </script>
+
+    <!-- Информация о синхронизации -->
+    <script>
+        // ==================== ИНФОРМАЦИЯ О SYNCHRONIZATION ====================
+        
+        // Эта функция демонстрирует, как можно интегрировать Firebase
+        // Для реального использования нужно зарегистрироваться на firebase.google.com
+        function showFirebaseInfo() {
+            alert(
+                "📡 СИНХРОНИЗАЦИЯ С FIREBASE\n\n" +
+                "✅ Да, можно синхронизировать аккаунты на разных устройствах!\n\n" +
+                "🔥 Firebase от Google:\n" +
+                "• Бесплатный тариф: до 1 ГБ данных, 50K операций в день\n" +
+                "• Реальная синхронизация между устройствами\n" +
+                "• Авторизация через Google, Facebook и др.\n" +
+                "• Автоматическое сохранение изменений\n\n" +
+                "💡 Альтернативы:\n" +
+                "• Supabase - бесплатно до 500 МБ\n" +
+                "• PocketBase - можно самому хостить бесплатно\n" +
+                "• JSONBin.io - бесплатно для небольших проектов\n\n" +
+                "Хочешь добавить синхронизацию? Напиши!"
+            );
         }
         
-        // Глобальные функции для использования в onclick
-        window.removeActivity = removeActivity;
-        window.removeProject = removeProject;
-        window.editProject = editProject;
-        window.closeProjectModal = closeProjectModal;
+        // Добавляем кнопку информации о синхронизации в меню
+        document.addEventListener('DOMContentLoaded', function() {
+            const syncInfoBtn = document.createElement('div');
+            syncInfoBtn.className = 'menu-btn';
+            syncInfoBtn.title = 'Синхронизация';
+            syncInfoBtn.innerHTML = '<i class="fas fa-sync-alt"></i>';
+            syncInfoBtn.style.background = 'linear-gradient(45deg, #2196F3, #21CBF3)';
+            syncInfoBtn.addEventListener('click', showFirebaseInfo);
+            
+            document.querySelector('.main-menu').appendChild(syncInfoBtn);
+        });
     </script>
 </body>
 </html>
